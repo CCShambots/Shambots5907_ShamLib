@@ -15,7 +15,7 @@ public class SwerveModuleIOSim extends SwerveModuleIOReal {
       double maxTurnVelo,
       double maxTurnAccel,
       CurrentLimitsConfigs currentLimit) {
-    super(canbus, mI, driveGains, turnGains, maxTurnVelo, maxTurnAccel, currentLimit);
+    super(canbus, mI, driveGains, turnGains, maxTurnVelo, maxTurnAccel, false, false, currentLimit);
 
     PhysicsSim.getInstance().addTalonFX(turnMotor, 0.0001);
     PhysicsSim.getInstance().addTalonFX(driveMotor, 0.005);
