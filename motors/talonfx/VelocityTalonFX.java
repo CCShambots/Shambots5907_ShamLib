@@ -6,6 +6,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 public class VelocityTalonFX extends EnhancedTalonFX {
 
   private double target; // In output units
+  private boolean enableFOC = false;
 
   /**
    * Constructor for a velocity configured TalonFX
@@ -45,7 +46,7 @@ public class VelocityTalonFX extends EnhancedTalonFX {
    * @param target target position (in output units/sec)
    */
   public void setTarget(double target) {
-    setControl(new VelocityVoltage(outputToTicks(target)).withSlot(0));
+    setControl(new VelocityVoltage(outputToTicks(target)).withSlot(0).withEnableFOC(enableFOC));
 
     this.target = target;
   }
@@ -57,5 +58,9 @@ public class VelocityTalonFX extends EnhancedTalonFX {
    */
   public double getTarget() {
     return target;
+  }
+
+  public void setFOC(boolean enabled) {
+    enableFOC = enabled;
   }
 }

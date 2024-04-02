@@ -116,6 +116,11 @@ public class MotionMagicTalonFX extends EnhancedTalonFX {
     this.target = target;
     setControl(mmReq.withPosition(outputToTicks(target)).withSlot(0));
   }
+
+  public void setFOC(boolean enabled) {
+    mmReq.EnableFOC = enabled;
+  }
+
   /**
    * Returns the target of the motor in output units
    *
