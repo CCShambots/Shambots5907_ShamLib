@@ -27,6 +27,8 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
       PIDSVGains turnGains,
       double maxTurnVelo,
       double maxTurnAccel,
+      boolean enableDriveFOC,
+      boolean enableTurnFOC,
       CurrentLimitsConfigs currentLimit) {
 
     this.turnEncoder = new CANcoder(mI.encoderID, canbus);
@@ -50,6 +52,9 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     driveMotor.getConfigurator().refresh(configs);
     configs.NeutralMode = NeutralModeValue.Brake;
     driveMotor.getConfigurator().apply(configs);
+
+    turnMotor.setFOC(enableTurnFOC);
+    driveMotor.setFOC(enableDriveFOC);
   }
 
   @Override

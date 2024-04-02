@@ -215,6 +215,8 @@ public class SwerveDrive {
                   moduleTurnGains,
                   maxModuleTurnVelo,
                   maxModuleTurnAccel,
+                  m.enableTurnFOC,
+                  m.enableTurnFOC,
                   currentLimit);
           break;
         case SIM:

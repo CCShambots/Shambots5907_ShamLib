@@ -14,6 +14,8 @@ public class ModuleInfo {
   public final double driveRatio;
   public final boolean driveInverted;
   public final boolean turnInverted;
+  public final boolean enableDriveFOC;
+  public final boolean enableTurnFOC;
 
   public ModuleInfo(
       int driveMotorID,
@@ -24,7 +26,9 @@ public class ModuleInfo {
       double turnRatio,
       double driveRatio,
       boolean driveInverted,
-      boolean turnInverted) {
+      boolean turnInverted,
+      boolean enableDriveFOC,
+      boolean enableTurnFOC) {
     this.driveMotorID = driveMotorID;
     this.turnMotorID = turnMotorID;
     this.encoderID = encoderID;
@@ -34,6 +38,8 @@ public class ModuleInfo {
     this.driveRatio = driveRatio;
     this.driveInverted = driveInverted;
     this.turnInverted = turnInverted;
+    this.enableDriveFOC = enableDriveFOC;
+    this.enableTurnFOC = enableTurnFOC;
   }
 
   /**
@@ -55,7 +61,9 @@ public class ModuleInfo {
       int encoderID,
       double encoderOffset,
       Translation2d offset,
-      boolean driveInverted) {
+      boolean driveInverted,
+      boolean enableDriveFOC,
+      boolean enableTurnFOC) {
     return new ModuleInfo(
         driveMotorID,
         turnMotorID,
@@ -65,7 +73,9 @@ public class ModuleInfo {
         type.turnRatio,
         speed.gearRatio * type.wheelCircumferencne,
         driveInverted,
-        type.turnInverted);
+        type.turnInverted,
+        enableDriveFOC,
+        enableTurnFOC);
   }
 
   public enum SwerveModuleType {
