@@ -30,6 +30,8 @@ public class SwerveModule implements Sendable {
 
   private double lastPositionMeters = 0.0; // Used for delta calculation
 
+  private final ModuleInfo info;
+
   public SwerveModule(
       SwerveModuleIO io,
       String name,
@@ -47,6 +49,8 @@ public class SwerveModule implements Sendable {
     this.moduleName = name;
 
     this.encoderOffset = moduleInfo.encoderOffset;
+
+    this.info = moduleInfo;
 
     io.updateInputs(inputs);
 
@@ -85,6 +89,10 @@ public class SwerveModule implements Sendable {
     io.setTurnMotorTarget(targetModuleAngle);
 
     io.setDriveMotorTarget(targetState.speedMetersPerSecond);
+  }
+
+  public ModuleInfo getInfo() {
+    return info;
   }
 
   public double getDriveMotorRate() {

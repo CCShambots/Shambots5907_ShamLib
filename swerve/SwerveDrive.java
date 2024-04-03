@@ -391,6 +391,10 @@ public class SwerveDrive {
     this.odometryBoundingBox = odometryBoundingBox;
   }
 
+  public Command getCalculateWheelRadiusCommand(double assumedWheelRadiusMeters) {
+    return new CalculateWheelRadiusCommand(this, assumedWheelRadiusMeters, driveBaseRadius);
+  }
+
   public double[] getModuleAngles() {
 
     double[] angles = new double[numModules];
