@@ -80,7 +80,7 @@ public class ModuleInfo {
 
   public enum SwerveModuleType {
     MK4(false, (1.0 / 12.8) * 360, 2 * Math.PI * 0.0508),
-    MK4i(true, (7.0 / 150.0) * 360, 2 * Math.PI * 0.04942946369018648);
+    MK4i(true, (7.0 / 150.0) * 360, 2 * Math.PI * 0.05032236975010011);
 
     public final boolean turnInverted; // Whether the turn motor should be inverted
     public final double turnRatio; // The gear ratio on the turn motor (deg)
