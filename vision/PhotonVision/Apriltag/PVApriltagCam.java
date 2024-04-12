@@ -23,6 +23,8 @@ public class PVApriltagCam {
   private final String name;
   private final AprilTagFieldLayout fieldLayout;
   private final double trustCutOff;
+  private double tagDistancePower = 0.33;
+  private double tagDistanceScalar = 1;
   private final PhotonPoseEstimator photonPoseEstimator;
 
   private UnaryOperator<PhotonPipelineResult> preprocess = null;
@@ -86,6 +88,14 @@ public class PVApriltagCam {
     Logger.processInputs(name, inputs);
   }
 
+  public void setTagDistancePower(double val) {
+    tagDistancePower = val;
+  }
+
+  public void setTagDistanceScalar(double val) {
+    tagDistanceScalar = val;
+  }
+
   public Matrix<N3, N1> getXYThetaStdDev(EstimatedRobotPose pose) {
     double totalDistance = 0.0;
     int nonErrorTags = 0;
@@ -108,8 +118,10 @@ public class PVApriltagCam {
     }
     double avgDistance = totalDistance / nonErrorTags;
 
-    double xyStdDev = Math.pow(avgDistance, .33) / nonErrorTags;
-    double thetaStdDev = Math.pow(avgDistance, .33) / nonErrorTags;
+    avgDistance *= tagDistanceScalar;
+
+    double xyStdDev = Math.pow(avgDistance, tagDistancePower) / nonErrorTags;
+    double thetaStdDev = Math.pow(avgDistance, tagDistancePower) / nonErrorTags;
 
     if (avgDistance >= trustCutOff) {
       return VecBuilder.fill(10000, 10000, 10000);
