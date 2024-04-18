@@ -19,6 +19,7 @@ public interface PVApriltagIO {
     public PhotonPipelineResult frame;
     public Optional<Matrix<N3, N3>> cameraMatrix = Optional.empty();
     public Optional<Matrix<N5, N1>> distanceCoeffs = Optional.empty();
+    public double timeStampSeconds;
 
     @Override
     public void toLog(LogTable table) {
@@ -26,6 +27,8 @@ public interface PVApriltagIO {
       PhotonPipelineResult.serde.pack(packet, frame);
       table.put("rawPipelineResult", packet.getData());
       table.put("isConnected", isConnected);
+
+      table.put("timestampSeconds", frame.getTimestampSeconds());
 
       cameraMatrix.ifPresent(n3N3Matrix -> table.put("cameraMatrix", n3N3Matrix.getData()));
       distanceCoeffs.ifPresent(n5N1Matrix -> table.put("distanceCoeffs", n5N1Matrix.getData()));
@@ -36,7 +39,10 @@ public interface PVApriltagIO {
       Packet packet = new Packet(table.get("rawPipelineResult", new byte[0]));
       frame = PhotonPipelineResult.serde.unpack(packet);
 
-      frame.setTimestampSeconds(Timer.getFPGATimestamp());
+      // frame.setTimestampSeconds(Timer.getFPGATimestamp() - frame.getLatencyMillis() * 1000);
+
+      timeStampSeconds = table.get("timestampSeconds", -1);
+      frame.setTimestampSeconds(timeStampSeconds);
 
       isConnected = table.get("isConnected", false);
 

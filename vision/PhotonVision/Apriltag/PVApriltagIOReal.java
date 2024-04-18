@@ -21,5 +21,7 @@ public class PVApriltagIOReal implements PVApriltagIO {
     inputs.distanceCoeffs = camera.getDistCoeffs();
 
     inputs.isConnected = camera.isConnected();
+
+    inputs.timeStampSeconds = res.getTimestampSeconds();
   }
 }
