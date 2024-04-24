@@ -493,6 +493,13 @@ public class SwerveDrive {
   }
 
   /**
+   * Align all modules straight forwards
+   */
+  public void alignModules() {
+    setAllModules(new SwerveModuleState(0, new Rotation2d()));
+  }
+
+  /**
    * Finds the angle of the robot in radians (limited -PI to PI)
    *
    * @return Robot angle
@@ -567,10 +574,11 @@ public class SwerveDrive {
 
   /* RESET COMMANDS FOR DIFFERENT ASPECTS */
 
-  // TODO: Make this play nice with the odometry. Need to test if this is even an issue
+  /**
+   * WARNING: This does NOT work with odometry It causes the bot's rotation to arbitrarily change
+   */
   public void resetGyro(Rotation2d angle) {
     gyroIO.setGyroYaw(angle);
-    // rotationOffset = new Rotation2d();
     fieldOrientedRotationOffset = new Rotation2d();
     holdAngle = angle;
   }
