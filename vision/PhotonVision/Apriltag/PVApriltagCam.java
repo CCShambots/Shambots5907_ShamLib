@@ -31,6 +31,14 @@ public class PVApriltagCam {
   private Function<EstimatedRobotPose, TimestampedPoseEstimator.TimestampedVisionUpdate>
       postprocess = this::defaultPostProcess;
 
+  /**
+   * Constructor for a Photon Vision camera that can track AprilTags
+   * @param name the name of the camera
+   * @param buildMode The current build mode (to adjust IO settings for replay and sim moments)
+   * @param botToCam The transform that provides the camera's offset relative to the bot
+   * @param fieldLayout The layout of Apriltags on the field
+   * @param trustCutOff Distance (meters) where trust should be scaled back radically (because far tags become highly inaccurate)
+   */
   public PVApriltagCam(
       String name,
       ShamLibConstants.BuildMode buildMode,
@@ -39,6 +47,8 @@ public class PVApriltagCam {
       double trustCutOff) {
     io = getNewIO(buildMode, name);
 
+    //Default to LOWEST_AMBIGUITY
+    //In most cases the user should probably configure this to use multi tag
     photonPoseEstimator =
         new PhotonPoseEstimator(
             fieldLayout, PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY, botToCam);
@@ -102,7 +112,7 @@ public class PVApriltagCam {
 
     // make the std dev greater based on how far away the tags are (trust estimates from further
     // tags less)
-    // algorithm from frc6328
+    // algorithm from frc6328 - Mechanical Advantage my beloved
 
     for (var tag : pose.targetsUsed) {
       var tagOnField = fieldLayout.getTagPose(tag.getFiducialId());
