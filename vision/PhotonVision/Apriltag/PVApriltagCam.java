@@ -4,6 +4,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -33,11 +34,13 @@ public class PVApriltagCam {
 
   /**
    * Constructor for a Photon Vision camera that can track AprilTags
+   *
    * @param name the name of the camera
    * @param buildMode The current build mode (to adjust IO settings for replay and sim moments)
    * @param botToCam The transform that provides the camera's offset relative to the bot
    * @param fieldLayout The layout of Apriltags on the field
-   * @param trustCutOff Distance (meters) where trust should be scaled back radically (because far tags become highly inaccurate)
+   * @param trustCutOff Distance (meters) where trust should be scaled back radically (because far
+   *     tags become highly inaccurate)
    */
   public PVApriltagCam(
       String name,
@@ -47,8 +50,8 @@ public class PVApriltagCam {
       double trustCutOff) {
     io = getNewIO(buildMode, name);
 
-    //Default to LOWEST_AMBIGUITY
-    //In most cases the user should probably configure this to use multi tag
+    // Default to LOWEST_AMBIGUITY
+    // In most cases the user should probably configure this to use multi tag
     photonPoseEstimator =
         new PhotonPoseEstimator(
             fieldLayout, PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY, botToCam);
@@ -96,6 +99,14 @@ public class PVApriltagCam {
   public void update() {
     io.updateInputs(inputs);
     Logger.processInputs(name, inputs);
+
+    Logger.recordOutput("Vision/" + name + "/tags", getCurrentVisionTagPoses());
+  }
+
+  public Pose3d[] getCurrentVisionTagPoses() {
+    return inputs.frame.targets.stream()
+        .map(e -> fieldLayout.getTagPose(e.getFiducialId()).orElseGet(() -> new Pose3d()))
+        .toArray(Pose3d[]::new);
   }
 
   public void setTagDistancePower(double val) {

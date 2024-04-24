@@ -492,9 +492,7 @@ public class SwerveDrive {
     }
   }
 
-  /**
-   * Align all modules straight forwards
-   */
+  /** Align all modules straight forwards */
   public void alignModules() {
     setAllModules(new SwerveModuleState(0, new Rotation2d()));
   }
