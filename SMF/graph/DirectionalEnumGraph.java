@@ -22,11 +22,6 @@ public class DirectionalEnumGraph<V extends Enum<V>, T extends TransitionBase<? 
    * @param transition The transition to add to the graph
    */
   public void addEdge(T transition) {
-    // TODO: Should we be throwing an exception here or at least returning a boolean of success or
-    // not?
-    // if (getEdge(fromOrdinal(transition.getStartState().ordinal()),
-    // fromOrdinal(transition.getStartState().ordinal())) != null) return;
-
     setEdge(transition);
   }
 

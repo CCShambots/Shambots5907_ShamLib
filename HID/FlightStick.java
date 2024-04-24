@@ -50,7 +50,7 @@ public class FlightStick extends GenericHID {
   }
 
   /** Represents an axis on a flight stick. */
-  public enum Axis { // TODO: Get these axes
+  public enum Axis {
     LeftX(0),
     LeftY(1),
     LeftTrigger(2),
