@@ -1,7 +1,10 @@
-package frc.robot.ShamLib.Candle;
+package frc.robot.ShamLib.Candle.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.ShamLib.Candle.CANdleEX;
+import frc.robot.ShamLib.Candle.RGB;
+
 import java.util.ArrayList;
 import java.util.List;
 

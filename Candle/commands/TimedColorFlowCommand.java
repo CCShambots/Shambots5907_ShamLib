@@ -1,7 +1,11 @@
-package frc.robot.ShamLib.Candle;
+package frc.robot.ShamLib.Candle.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.ShamLib.Candle.MultipleColorSegments;
+import frc.robot.ShamLib.Candle.RGB;
+import frc.robot.ShamLib.Candle.RGBSegmentInfo;
+
 import java.util.function.Consumer;
 
 public class TimedColorFlowCommand extends Command {
@@ -14,6 +18,15 @@ public class TimedColorFlowCommand extends Command {
   private final RGB color;
   private final RGB backgroundColor;
 
+  /**
+   * 
+   * @param numLEDS Number of LEDs (Do NOT include lights in the start offset)
+   * @param startOffset Number of LEDs to offset by ()
+   * @param setLEDs Consumer that will set the light values on the CANdle
+   * @param totalSeconds Total time the animation will run
+   * @param color The color to fill with
+   * @param backgroundColor The backgroudn color that will be there initially
+   */
   public TimedColorFlowCommand(
       int numLEDS,
       int startOffset,

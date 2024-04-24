@@ -6,16 +6,23 @@ import java.util.List;
 public class MultipleColorSegments {
   final List<ColorSegmentInfo> colorSegmentInfoList = new ArrayList<>();
 
+  private int offset;
+
   public MultipleColorSegments(int baseOffset, RGBSegmentInfo... segments) {
-    int offset = baseOffset;
-    for (RGBSegmentInfo seg : segments) {
-      colorSegmentInfoList.add(new ColorSegmentInfo(seg.rgb, seg.numLEDs, offset));
-      offset += seg.numLEDs;
+    offset = baseOffset;
+    for (RGBSegmentInfo segment : segments) {
+      colorSegmentInfoList.add(new ColorSegmentInfo(segment.rgb, segment.numLEDs, offset));
+      offset += segment.numLEDs;
     }
   }
 
   public MultipleColorSegments(RGBSegmentInfo... segments) {
     this(0, segments);
+  }
+
+  public void addSegment(RGBSegmentInfo segment) {
+    colorSegmentInfoList.add(new ColorSegmentInfo(segment.rgb, segment.numLEDs, offset));
+    offset += segment.numLEDs;
   }
 
   static class ColorSegmentInfo {
