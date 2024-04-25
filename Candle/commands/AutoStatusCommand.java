@@ -95,6 +95,11 @@ public class AutoStatusCommand extends Command {
     timer.stop();
   }
 
+  @Override
+  public boolean runsWhenDisabled() {
+    return true;
+  }
+
   // No need for an isFinished(). The lights subsystem should handle entering and exiting this
   // command automatically
 }
