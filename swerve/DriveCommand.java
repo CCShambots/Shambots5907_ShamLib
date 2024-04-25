@@ -4,8 +4,6 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.UnaryOperator;
 
@@ -15,17 +13,15 @@ public class DriveCommand extends Command {
   private final DoubleSupplier ySupplier;
   private final DoubleSupplier turnSupplier;
 
-  private final List<SlewRateLimiter> xLimiters = new ArrayList<>();
-  private final List<SlewRateLimiter> yLimiters = new ArrayList<>();
-  private final List<SlewRateLimiter> thetaLimiters = new ArrayList<>();
+  private final SlewRateLimiter xLimiter;
+  private final SlewRateLimiter yLimiter;
+  private final SlewRateLimiter thetaLimiter;
 
-  private final List<Double> maxLinearSpeeds = new ArrayList<>();
-  private final List<Double> maxRotationalSpeeds = new ArrayList<>();
+  private final Double maxLinearSpeed;
+  private final Double maxRotationalSpeed;
 
   private final double deadband;
   private final UnaryOperator<Double> controllerConversion;
-
-  private int prevSpeedMode;
 
   public DriveCommand(
       SwerveDrive drivetrain,
@@ -35,20 +31,18 @@ public class DriveCommand extends Command {
       double deadband,
       UnaryOperator<Double> controllerConversion,
       Subsystem subsystem,
-      SwerveSpeedLimits... speedLimits) {
+      SwerveSpeedLimits speedLimits) {
     this.drivetrain = drivetrain;
     this.xSupplier = xSupplier;
     this.ySupplier = ySupplier;
     this.turnSupplier = turnSupplier;
 
-    for (SwerveSpeedLimits l : speedLimits) {
-      xLimiters.add(new SlewRateLimiter(l.getMaxAcceleration()));
-      yLimiters.add(new SlewRateLimiter(l.getMaxAcceleration()));
-      thetaLimiters.add(new SlewRateLimiter(l.getMaxRotationalAcceleration()));
+    xLimiter = new SlewRateLimiter(speedLimits.getMaxAcceleration());
+    yLimiter = new SlewRateLimiter(speedLimits.getMaxAcceleration());
+    thetaLimiter = new SlewRateLimiter(speedLimits.getMaxRotationalAcceleration());
 
-      maxLinearSpeeds.add(l.getMaxSpeed());
-      maxRotationalSpeeds.add(l.getMaxRotationalSpeed());
-    }
+    maxLinearSpeed = speedLimits.getMaxSpeed();
+    maxRotationalSpeed = speedLimits.getMaxRotationalSpeed();
 
     this.deadband = deadband;
     this.controllerConversion = controllerConversion;
@@ -59,24 +53,14 @@ public class DriveCommand extends Command {
   @Override
   public void initialize() {
     resetSpeedLimiters();
-
-    prevSpeedMode = drivetrain.getSpeedMode();
   }
 
   @Override
   public void execute() {
-    int currentSpeedMode = drivetrain.getSpeedMode();
 
-    if (currentSpeedMode != prevSpeedMode) {
-      resetSpeedLimiters();
-    }
-
-    double correctedX =
-        convertRawInput(xSupplier.getAsDouble()) * maxLinearSpeeds.get(currentSpeedMode);
-    double correctedY =
-        convertRawInput(ySupplier.getAsDouble()) * maxLinearSpeeds.get(currentSpeedMode);
-    double correctedRot =
-        convertRawInput(turnSupplier.getAsDouble()) * maxRotationalSpeeds.get(currentSpeedMode);
+    double correctedX = convertRawInput(xSupplier.getAsDouble()) * maxLinearSpeed;
+    double correctedY = convertRawInput(ySupplier.getAsDouble()) * maxLinearSpeed;
+    double correctedRot = convertRawInput(turnSupplier.getAsDouble()) * maxRotationalSpeed;
 
     ChassisSpeeds speeds;
 
@@ -88,14 +72,11 @@ public class DriveCommand extends Command {
       speeds = new ChassisSpeeds(correctedX, correctedY, correctedRot);
     }
 
-    speeds.vxMetersPerSecond = xLimiters.get(currentSpeedMode).calculate(speeds.vxMetersPerSecond);
-    speeds.vyMetersPerSecond = yLimiters.get(currentSpeedMode).calculate(speeds.vyMetersPerSecond);
-    speeds.omegaRadiansPerSecond =
-        thetaLimiters.get(currentSpeedMode).calculate(speeds.omegaRadiansPerSecond);
+    speeds.vxMetersPerSecond = xLimiter.calculate(speeds.vxMetersPerSecond);
+    speeds.vyMetersPerSecond = yLimiter.calculate(speeds.vyMetersPerSecond);
+    speeds.omegaRadiansPerSecond = thetaLimiter.calculate(speeds.omegaRadiansPerSecond);
 
-    drivetrain.drive(speeds, maxLinearSpeeds.get(currentSpeedMode));
-
-    prevSpeedMode = currentSpeedMode;
+    drivetrain.drive(speeds, maxLinearSpeed);
   }
 
   @Override
@@ -117,8 +98,8 @@ public class DriveCommand extends Command {
 
   private void resetSpeedLimiters() {
     ChassisSpeeds currentSpeeds = drivetrain.getChassisSpeeds();
-    xLimiters.forEach((e) -> e.reset(currentSpeeds.vxMetersPerSecond));
-    yLimiters.forEach((e) -> e.reset(currentSpeeds.vyMetersPerSecond));
-    thetaLimiters.forEach((e) -> e.reset(currentSpeeds.omegaRadiansPerSecond));
+    xLimiter.reset(currentSpeeds.vxMetersPerSecond);
+    yLimiter.reset(currentSpeeds.vyMetersPerSecond);
+    thetaLimiter.reset(currentSpeeds.omegaRadiansPerSecond);
   }
 }

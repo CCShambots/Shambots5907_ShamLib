@@ -70,13 +70,12 @@ public class SwerveDrive {
   private int speedMode = 0;
 
   private final PIDGains translationGains;
-  private final PIDGains rotationGains;
+  private final PIDGains autoThetaGains;
   private final double driveBaseRadius; // In meters
 
   private final double loopPeriod;
 
   private final BooleanSupplier flipTrajectory;
-  private final PIDGains autoThetaGains;
   private final Subsystem subsystem;
 
   protected OdometryBoundingBox odometryBoundingBox;
@@ -84,6 +83,7 @@ public class SwerveDrive {
   /**
    * Constructor for your typical swerve drive with odometry compatible with vision pose estimation
    *
+   * @param mode Build mode for AdvantageKit related logging
    * @param pigeon2ID CAN idea of the pigeon 2 gyro
    * @param moduleDriveGains PIDSV gains for the velocity of the swerve modules
    * @param moduleTurnGains PIDSV gains for the position of the swerve modules
@@ -102,10 +102,7 @@ public class SwerveDrive {
       int pigeon2ID,
       PIDSVGains moduleDriveGains,
       PIDSVGains moduleTurnGains,
-      double maxChassisSpeed,
-      double maxChassisAccel,
-      double maxChassisRotationVel,
-      double maxChassisRotationAccel,
+      SwerveSpeedLimits speedLimits,
       double maxModuleTurnVelo,
       double maxModuleTurnAccel,
       PIDGains autoThetaGains,
@@ -123,10 +120,7 @@ public class SwerveDrive {
         pigeon2ID,
         moduleDriveGains,
         moduleTurnGains,
-        maxChassisSpeed,
-        maxChassisAccel,
-        maxChassisRotationVel,
-        maxChassisRotationAccel,
+        speedLimits,
         maxModuleTurnVelo,
         maxModuleTurnAccel,
         autoThetaGains,
@@ -164,10 +158,7 @@ public class SwerveDrive {
       int pigeon2ID,
       PIDSVGains moduleDriveGains,
       PIDSVGains moduleTurnGains,
-      double maxChassisSpeed,
-      double maxChassisAccel,
-      double maxChassisRotationVel,
-      double maxChassisRotationAccel,
+      SwerveSpeedLimits speedLimits,
       double maxModuleTurnVelo,
       double maxModuleTurnAccel,
       PIDGains autoThetaGains,
@@ -186,13 +177,12 @@ public class SwerveDrive {
     this.buildMode = mode;
 
     this.extraTelemetry = extraTelemetry;
-    this.maxChassisSpeed = maxChassisSpeed;
-    this.maxChassisAcceleration = maxChassisAccel;
-    this.maxChassisRotationVel = maxChassisRotationVel;
-    this.maxChassisRotationAccel = maxChassisRotationAccel;
+    this.maxChassisSpeed = speedLimits.getMaxSpeed();
+    this.maxChassisAcceleration = speedLimits.getMaxAcceleration();
+    this.maxChassisRotationVel = speedLimits.getMaxRotationalSpeed();
+    this.maxChassisRotationAccel = speedLimits.getMaxRotationalAcceleration();
 
     this.translationGains = translationGains;
-    this.rotationGains = autoThetaGains;
 
     this.loopPeriod = loopPeriod;
 
@@ -560,14 +550,6 @@ public class SwerveDrive {
 
   public ChassisSpeeds getTargetChassisSpeeds() {
     return kDriveKinematics.toChassisSpeeds(getTargetModuleStates());
-  }
-
-  public int getSpeedMode() {
-    return speedMode;
-  }
-
-  public void setSpeedMode(int speedMode) {
-    this.speedMode = speedMode;
   }
 
   /* RESET COMMANDS FOR DIFFERENT ASPECTS */
