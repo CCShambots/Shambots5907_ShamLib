@@ -19,8 +19,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.ShamLib.PIDGains;
@@ -64,11 +62,6 @@ public class SwerveDrive {
 
   private boolean fieldRelative = true;
 
-  private final Field2d field;
-  private final boolean extraTelemetry;
-
-  private int speedMode = 0;
-
   private final PIDGains translationGains;
   private final PIDGains autoThetaGains;
   private final double driveBaseRadius; // In meters
@@ -80,23 +73,26 @@ public class SwerveDrive {
 
   protected OdometryBoundingBox odometryBoundingBox;
 
-  /**
-   * Constructor for your typical swerve drive with odometry compatible with vision pose estimation
-   *
-   * @param mode Build mode for AdvantageKit related logging
-   * @param pigeon2ID CAN idea of the pigeon 2 gyro
-   * @param moduleDriveGains PIDSV gains for the velocity of the swerve modules
-   * @param moduleTurnGains PIDSV gains for the position of the swerve modules
-   * @param maxModuleTurnVelo maximum velocity the turn motors should go
-   * @param maxModuleTurnAccel maximum acceleration the turn motors should go
-   * @param autoThetaGains PID gains for the angle hold controller in autonomous
-   * @param translationGains PID gains for the trans
-   * @param extraTelemetry whether to send additional telemetry data, like vision pose measurements,
-   *     trajectory data, and module poses
-   * @param moduleCanbus The canbus the modules are on (pass "" for default)
-   * @param gyroCanbus The canbus the gyro is on (pass "" for default)
-   * @param moduleInfos Array of module infos, one for each module
-   */
+   /**
+    * Constructor for your typical swerve drive with odometry compatible with vision pose estimation
+    *
+    * @param mode Build mode for AdvantageKit related logging
+    * @param pigeon2ID CAN id of the pigeon 2 gyro
+    * @param moduleDriveGains PIDSV gains for the velocity of the swerve modules 
+    * @param moduleTurnGains PIDSV gains for the position of the swerve modules
+    * @param speedLimits Default chassis speed limits
+    * @param maxModuleTurnVelo Maximum velocity of the turn motors
+    * @param maxModuleTurnAccel Maximum acceleration of the turn motors
+    * @param autoThetaGains PID gains for the autonomous angle controller (configured with PathPlanner)
+    * @param translationGains PID gains for the translation of the bot (used with PathPlanner)
+    * @param moduleCanbus The canbus the swerve modules are on (pass "" for RIO and "*" for a CANivore)
+    * @param gyroCanbus The gryo the swerve modules are on (pass "" for RIO and "*" for a CANivore)
+    * @param currentLimit The current limits to apply to the motors
+    * @param subsystem The drivetrain subsystem this object is constructed in
+    * @param flipTrajectory Whether to flip the trajectory (blue vs. red alliance)
+    * @param loopPeriod RIO loop time (used to discretize chassis speeds, preventing "coriolis" effect of turning)
+    * @param moduleInfos Data about each swerve module
+    */
   public SwerveDrive(
       BuildMode mode,
       int pigeon2ID,
@@ -107,7 +103,6 @@ public class SwerveDrive {
       double maxModuleTurnAccel,
       PIDGains autoThetaGains,
       PIDGains translationGains,
-      boolean extraTelemetry,
       String moduleCanbus,
       String gyroCanbus,
       CurrentLimitsConfigs currentLimit,
@@ -125,7 +120,6 @@ public class SwerveDrive {
         maxModuleTurnAccel,
         autoThetaGains,
         translationGains,
-        extraTelemetry,
         moduleCanbus,
         gyroCanbus,
         currentLimit,
@@ -137,22 +131,29 @@ public class SwerveDrive {
         moduleInfos);
   }
 
-  /**
-   * Constructor for your typical swerve drive with odometry compatible with vision pose estimation
-   *
-   * @param pigeon2ID CAN idea of the pigeon 2 gyro
-   * @param moduleDriveGains PIDSV gains for the velocity of the swerve modules
-   * @param moduleTurnGains PIDSV gains for the position of the swerve modules
-   * @param maxModuleTurnVelo maximum velocity the turn motors should go
-   * @param maxModuleTurnAccel maximum acceleration the turn motors should go
-   * @param autoThetaGains PID gains for the angle hold controller in autonomous
-   * @param translationGains PID gains for the trans
-   * @param extraTelemetry whether to send additional telemetry data, like vision pose measurements,
-   *     trajectory data, and module poses
-   * @param moduleCanbus The canbus the modules are on (pass "" for default)
-   * @param gyroCanbus The canbus the gyro is on (pass "" for default)
-   * @param moduleInfos Array of module infos, one for each module
-   */
+
+   /**
+    *  More detailed constructor
+    *
+    * @param mode Build mode for AdvantageKit related logging
+    * @param pigeon2ID CAN id of the pigeon 2 gyro
+    * @param moduleDriveGains PIDSV gains for the velocity of the swerve modules 
+    * @param moduleTurnGains PIDSV gains for the position of the swerve modules
+    * @param speedLimits Default chassis speed limits
+    * @param maxModuleTurnVelo Maximum velocity of the turn motors
+    * @param maxModuleTurnAccel Maximum acceleration of the turn motors
+    * @param autoThetaGains PID gains for the autonomous angle controller (configured with PathPlanner)
+    * @param translationGains PID gains for the translation of the bot (used with PathPlanner)
+    * @param moduleCanbus The canbus the swerve modules are on (pass "" for RIO and "*" for a CANivore)
+    * @param gyroCanbus The gryo the swerve modules are on (pass "" for RIO and "*" for a CANivore)
+    * @param currentLimit The current limits to apply to the motors
+    * @param subsystem The drivetrain subsystem this object is constructed in
+    * @param useTimestamped Whether to use timestamped vision data
+    * @param flipTrajectory Whether to flip the trajectory (blue vs. red alliance)
+    * @param stdDevs Standard deviations for the timestamped pose estimator
+    * @param loopPeriod RIO loop time (used to discretize chassis speeds, preventing "coriolis" effect of turning)
+    * @param moduleInfos Data about each swerve module
+    */
   public SwerveDrive(
       BuildMode mode,
       int pigeon2ID,
@@ -163,7 +164,6 @@ public class SwerveDrive {
       double maxModuleTurnAccel,
       PIDGains autoThetaGains,
       PIDGains translationGains,
-      boolean extraTelemetry,
       String moduleCanbus,
       String gyroCanbus,
       CurrentLimitsConfigs currentLimit,
@@ -176,7 +176,6 @@ public class SwerveDrive {
 
     this.buildMode = mode;
 
-    this.extraTelemetry = extraTelemetry;
     this.maxChassisSpeed = speedLimits.getMaxSpeed();
     this.maxChassisAcceleration = speedLimits.getMaxAcceleration();
     this.maxChassisRotationVel = speedLimits.getMaxRotationalSpeed();
@@ -234,13 +233,11 @@ public class SwerveDrive {
               maxModuleTurnVelo,
               maxModuleTurnAccel));
 
-      if (extraTelemetry) {
-        SmartDashboard.putData("Module-" + i, modules.get(i));
-      }
     }
 
     kDriveKinematics = new SwerveDriveKinematics(offsets);
 
+    //Logic for changing what IO objects are constructed based on the build mode
     switch (mode) {
       case REAL:
         gyroIO = new GyroIOReal(pigeon2ID, gyroCanbus);
@@ -279,8 +276,6 @@ public class SwerveDrive {
 
     rotationOffset = getGyroHeading();
     holdAngle = new Rotation2d(rotationOffset.getRadians());
-
-    field = new Field2d();
 
     this.driveBaseRadius =
         Math.hypot(
@@ -350,8 +345,6 @@ public class SwerveDrive {
   }
 
   public void addVisionMeasurement(Pose2d pose) {
-    if (extraTelemetry) field.getObject("vision").setPose(pose);
-
     odometry.addVisionMeasurement(pose);
   }
 
@@ -482,11 +475,6 @@ public class SwerveDrive {
     }
   }
 
-  /** Align all modules straight forwards */
-  public void alignModules() {
-    setAllModules(new SwerveModuleState(0, new Rotation2d()));
-  }
-
   /**
    * Finds the angle of the robot in radians (limited -PI to PI)
    *
@@ -507,6 +495,12 @@ public class SwerveDrive {
 
   public void stopModules() {
     modules.forEach(SwerveModule::stop);
+  }
+
+  
+  /** Align all modules straight forwards */
+  public void alignModules() {
+    setAllModules(new SwerveModuleState(0, new Rotation2d()));
   }
 
   /**
@@ -563,12 +557,16 @@ public class SwerveDrive {
     holdAngle = angle;
   }
 
-  public void resetFieldOrientedRotationOffset(Rotation2d angle) {
-    fieldOrientedRotationOffset = angle;
-  }
-
   public void resetGyro() {
     resetGyro(new Rotation2d());
+  }
+
+  /**
+   * This is what should be used with odometry. 
+   * It applies an offset that is only used for field oriented driving, rather than screwing with a gyro value
+   */
+  public void resetFieldOrientedRotationOffset(Rotation2d angle) {
+    fieldOrientedRotationOffset = angle;
   }
 
   public void resetOdometryPose(Pose2d newPose) {
@@ -577,10 +575,6 @@ public class SwerveDrive {
 
   public void resetOdometryPose() {
     resetOdometryPose(new Pose2d());
-  }
-
-  public Field2d getField() {
-    return field;
   }
 
   public List<SwerveModule> getModules() {
