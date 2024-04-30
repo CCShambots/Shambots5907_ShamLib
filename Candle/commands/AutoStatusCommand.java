@@ -26,6 +26,17 @@ public class AutoStatusCommand extends Command {
 
   private final Timer timer = new Timer();
 
+  /**
+   * Command that splits the lights up into equal segments based on a number of 
+   * @param setLEDs LED consumer to set the colors of different LEDs
+   * @param successRGB The color a met condtion will be (solid)
+   * @param errorRGB The color an unmet condition will blink half of the time
+   * @param offRGB The color an unmet condition will blink the other half of the time
+   * @param numLEDs The total number of LEDs to run the animation across (not including those in the startOffset)
+   * @param startOffset Starting offset, should default to 8 in most use cases (the number of LEDs on the CANdle)
+   * @param blinkPeriod How fast (seconds) to blink the lights
+   * @param conditions Conditions that the lights will check
+   */
   public AutoStatusCommand(
       Consumer<MultipleColorSegments> setLEDs,
       RGB successRGB,
