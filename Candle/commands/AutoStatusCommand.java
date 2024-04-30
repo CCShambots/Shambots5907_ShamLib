@@ -27,7 +27,8 @@ public class AutoStatusCommand extends Command {
   private final Timer timer = new Timer();
 
   /**
-   * Command that splits the lights up into equal segments based on a number of 
+   * Command that splits the lights up into equal segments based on a number of conditions. 
+   * Should generally be run before the autonomous period to assure drivers that the robot is ready to run.
    * @param setLEDs LED consumer to set the colors of different LEDs
    * @param successRGB The color a met condtion will be (solid)
    * @param errorRGB The color an unmet condition will blink half of the time
