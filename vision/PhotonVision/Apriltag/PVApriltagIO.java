@@ -38,9 +38,7 @@ public interface PVApriltagIO {
       Packet packet = new Packet(table.get("rawPipelineResult", new byte[0]));
       frame = PhotonPipelineResult.serde.unpack(packet);
 
-      // frame.setTimestampSeconds(Timer.getFPGATimestamp() - frame.getLatencyMillis() * 1000);
-
-      timeStampSeconds = table.get("timestampSeconds", -1);
+      timeStampSeconds = table.get("timestampSeconds", -1.00);
       frame.setTimestampSeconds(timeStampSeconds);
 
       isConnected = table.get("isConnected", false);
