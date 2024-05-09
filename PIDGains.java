@@ -18,7 +18,7 @@ public class PIDGains {
     this(0, 0, 0);
   }
 
-public PIDController applyToController() {
+  public PIDController applyToController() {
     return new PIDController(p, i, d);
   }
 
