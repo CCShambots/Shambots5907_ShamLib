@@ -73,26 +73,29 @@ public class SwerveDrive {
 
   protected OdometryBoundingBox odometryBoundingBox;
 
-   /**
-    * Constructor for your typical swerve drive with odometry compatible with vision pose estimation
-    *
-    * @param mode Build mode for AdvantageKit related logging
-    * @param pigeon2ID CAN id of the pigeon 2 gyro
-    * @param moduleDriveGains PIDSV gains for the velocity of the swerve modules 
-    * @param moduleTurnGains PIDSV gains for the position of the swerve modules
-    * @param speedLimits Default chassis speed limits
-    * @param maxModuleTurnVelo Maximum velocity of the turn motors
-    * @param maxModuleTurnAccel Maximum acceleration of the turn motors
-    * @param autoThetaGains PID gains for the autonomous angle controller (configured with PathPlanner)
-    * @param translationGains PID gains for the translation of the bot (used with PathPlanner)
-    * @param moduleCanbus The canbus the swerve modules are on (pass "" for RIO and "*" for a CANivore)
-    * @param gyroCanbus The gryo the swerve modules are on (pass "" for RIO and "*" for a CANivore)
-    * @param currentLimit The current limits to apply to the motors
-    * @param subsystem The drivetrain subsystem this object is constructed in
-    * @param flipTrajectory Whether to flip the trajectory (blue vs. red alliance)
-    * @param loopPeriod RIO loop time (used to discretize chassis speeds, preventing "coriolis" effect of turning)
-    * @param moduleInfos Data about each swerve module
-    */
+  /**
+   * Constructor for your typical swerve drive with odometry compatible with vision pose estimation
+   *
+   * @param mode Build mode for AdvantageKit related logging
+   * @param pigeon2ID CAN id of the pigeon 2 gyro
+   * @param moduleDriveGains PIDSV gains for the velocity of the swerve modules
+   * @param moduleTurnGains PIDSV gains for the position of the swerve modules
+   * @param speedLimits Default chassis speed limits
+   * @param maxModuleTurnVelo Maximum velocity of the turn motors
+   * @param maxModuleTurnAccel Maximum acceleration of the turn motors
+   * @param autoThetaGains PID gains for the autonomous angle controller (configured with
+   *     PathPlanner)
+   * @param translationGains PID gains for the translation of the bot (used with PathPlanner)
+   * @param moduleCanbus The canbus the swerve modules are on (pass "" for RIO and "*" for a
+   *     CANivore)
+   * @param gyroCanbus The gryo the swerve modules are on (pass "" for RIO and "*" for a CANivore)
+   * @param currentLimit The current limits to apply to the motors
+   * @param subsystem The drivetrain subsystem this object is constructed in
+   * @param flipTrajectory Whether to flip the trajectory (blue vs. red alliance)
+   * @param loopPeriod RIO loop time (used to discretize chassis speeds, preventing "coriolis"
+   *     effect of turning)
+   * @param moduleInfos Data about each swerve module
+   */
   @Deprecated
   public SwerveDrive(
       BuildMode mode,
@@ -131,29 +134,31 @@ public class SwerveDrive {
         moduleInfos);
   }
 
-
-   /**
-    *  More detailed constructor
-    *
-    * @param mode Build mode for AdvantageKit related logging
-    * @param pigeon2ID CAN id of the pigeon 2 gyro
-    * @param moduleDriveGains PIDSV gains for the velocity of the swerve modules 
-    * @param moduleTurnGains PIDSV gains for the position of the swerve modules
-    * @param speedLimits Default chassis speed limits
-    * @param maxModuleTurnVelo Maximum velocity of the turn motors
-    * @param maxModuleTurnAccel Maximum acceleration of the turn motors
-    * @param autoThetaGains PID gains for the autonomous angle controller (configured with PathPlanner)
-    * @param translationGains PID gains for the translation of the bot (used with PathPlanner)
-    * @param moduleCanbus The canbus the swerve modules are on (pass "" for RIO and "*" for a CANivore)
-    * @param gyroCanbus The gryo the swerve modules are on (pass "" for RIO and "*" for a CANivore)
-    * @param currentLimit The current limits to apply to the motors
-    * @param subsystem The drivetrain subsystem this object is constructed in
-    * @param useTimestamped Whether to use timestamped vision data
-    * @param flipTrajectory Whether to flip the trajectory (blue vs. red alliance)
-    * @param stdDevs Standard deviations for the timestamped pose estimator
-    * @param loopPeriod RIO loop time (used to discretize chassis speeds, preventing "coriolis" effect of turning)
-    * @param moduleInfos Data about each swerve module
-    */
+  /**
+   * More detailed constructor
+   *
+   * @param mode Build mode for AdvantageKit related logging
+   * @param pigeon2ID CAN id of the pigeon 2 gyro
+   * @param moduleDriveGains PIDSV gains for the velocity of the swerve modules
+   * @param moduleTurnGains PIDSV gains for the position of the swerve modules
+   * @param speedLimits Default chassis speed limits
+   * @param maxModuleTurnVelo Maximum velocity of the turn motors
+   * @param maxModuleTurnAccel Maximum acceleration of the turn motors
+   * @param autoThetaGains PID gains for the autonomous angle controller (configured with
+   *     PathPlanner)
+   * @param translationGains PID gains for the translation of the bot (used with PathPlanner)
+   * @param moduleCanbus The canbus the swerve modules are on (pass "" for RIO and "*" for a
+   *     CANivore)
+   * @param gyroCanbus The gryo the swerve modules are on (pass "" for RIO and "*" for a CANivore)
+   * @param currentLimit The current limits to apply to the motors
+   * @param subsystem The drivetrain subsystem this object is constructed in
+   * @param useTimestamped Whether to use timestamped vision data
+   * @param flipTrajectory Whether to flip the trajectory (blue vs. red alliance)
+   * @param stdDevs Standard deviations for the timestamped pose estimator
+   * @param loopPeriod RIO loop time (used to discretize chassis speeds, preventing "coriolis"
+   *     effect of turning)
+   * @param moduleInfos Data about each swerve module
+   */
   @Deprecated
   public SwerveDrive(
       BuildMode mode,
@@ -232,20 +237,19 @@ public class SwerveDrive {
               moduleTurnGains,
               maxModuleTurnVelo,
               maxModuleTurnAccel));
-
     }
 
     kDriveKinematics = new SwerveDriveKinematics(offsets);
 
-    //Logic for changing what IO objects are constructed based on the build mode
+    // Logic for changing what IO objects are constructed based on the build mode
     switch (mode) {
       case REAL:
         gyroIO = new GyroIOReal(pigeon2ID, gyroCanbus);
-          odometry =
-              new SwerveOdometryReal(
-                  new SwerveDrivePoseEstimator(
-                      kDriveKinematics, getCurrentAngle(), getModulePositions(), new Pose2d()));
-       
+        odometry =
+            new SwerveOdometryReal(
+                new SwerveDrivePoseEstimator(
+                    kDriveKinematics, getCurrentAngle(), getModulePositions(), new Pose2d()));
+
         break;
       case REPLAY:
         gyroIO = new GyroIO() {};
@@ -255,11 +259,8 @@ public class SwerveDrive {
                     kDriveKinematics, getCurrentAngle(), getModulePositions(), new Pose2d()));
         break;
       default:
-        
-        odometry =
-            new SwerveTimestampedOdometrySim(
-                new TimestampedPoseEstimator(stdDevs), kDriveKinematics, modules);
-        
+        odometry = new SwerveOdometrySim(kDriveKinematics, modules);
+
         gyroIO = new GyroIO() {};
         break;
     }
@@ -337,20 +338,19 @@ public class SwerveDrive {
               config.moduleTurnGains,
               config.maxModuleTurnVelo,
               config.maxModuleTurnAccel));
-
     }
 
     kDriveKinematics = new SwerveDriveKinematics(offsets);
 
-    //Logic for changing what IO objects are constructed based on the build mode
+    // Logic for changing what IO objects are constructed based on the build mode
     switch (config.buildMode) {
       case REAL:
         gyroIO = new GyroIOReal(config.pigeon2ID, config.gyroCanbus);
-          odometry =
-              new SwerveOdometryReal(
-                  new SwerveDrivePoseEstimator(
-                      kDriveKinematics, getCurrentAngle(), getModulePositions(), new Pose2d()));
-       
+        odometry =
+            new SwerveOdometryReal(
+                new SwerveDrivePoseEstimator(
+                    kDriveKinematics, getCurrentAngle(), getModulePositions(), new Pose2d()));
+
         break;
       case REPLAY:
         gyroIO = new GyroIO() {};
@@ -360,11 +360,8 @@ public class SwerveDrive {
                     kDriveKinematics, getCurrentAngle(), getModulePositions(), new Pose2d()));
         break;
       default:
-        
-        odometry =
-            new SwerveTimestampedOdometrySim(
-                new TimestampedPoseEstimator(config.standardDeviations), kDriveKinematics, modules);
-        
+        odometry = new SwerveOdometrySim(kDriveKinematics, modules);
+
         gyroIO = new GyroIO() {};
         break;
     }
@@ -541,6 +538,8 @@ public class SwerveDrive {
       speeds.vyMetersPerSecond = speeds.vyMetersPerSecond * factor;
     }
 
+    // Discretizing chassis speeds helps to avoid "pulling"/"coriolis effect"
+    // that happens when the drivetrain tries to turn at high speeds
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, loopPeriod);
 
     SwerveModuleState[] swerveModuleStates = kDriveKinematics.toSwerveModuleStates(discreteSpeeds);
@@ -592,7 +591,6 @@ public class SwerveDrive {
     modules.forEach(SwerveModule::stop);
   }
 
-  
   /** Align all modules straight forwards */
   public void alignModules() {
     setAllModules(new SwerveModuleState(0, new Rotation2d()));
@@ -657,8 +655,8 @@ public class SwerveDrive {
   }
 
   /**
-   * This is what should be used with odometry. 
-   * It applies an offset that is only used for field oriented driving, rather than screwing with a gyro value
+   * This is what should be used with odometry. It applies an offset that is only used for field
+   * oriented driving, rather than screwing with a gyro value
    */
   public void resetFieldOrientedRotationOffset(Rotation2d angle) {
     fieldOrientedRotationOffset = angle;
