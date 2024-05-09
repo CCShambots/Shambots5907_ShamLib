@@ -61,6 +61,10 @@ public class PVApriltagCam {
     this.trustCutOff = trustCutOff;
   }
 
+  public void setBotToCamTransform(Transform3d transform) {
+    photonPoseEstimator.setRobotToCameraTransform(transform);
+  }
+
   public TimestampedPoseEstimator.TimestampedVisionUpdate defaultPostProcess(
       EstimatedRobotPose estimate) {
     return new TimestampedPoseEstimator.TimestampedVisionUpdate(
