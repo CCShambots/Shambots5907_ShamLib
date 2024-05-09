@@ -93,6 +93,7 @@ public class SwerveDrive {
     * @param loopPeriod RIO loop time (used to discretize chassis speeds, preventing "coriolis" effect of turning)
     * @param moduleInfos Data about each swerve module
     */
+  @Deprecated
   public SwerveDrive(
       BuildMode mode,
       int pigeon2ID,
@@ -124,7 +125,6 @@ public class SwerveDrive {
         gyroCanbus,
         currentLimit,
         subsystem,
-        false,
         flipTrajectory,
         null,
         loopPeriod,
@@ -154,6 +154,7 @@ public class SwerveDrive {
     * @param loopPeriod RIO loop time (used to discretize chassis speeds, preventing "coriolis" effect of turning)
     * @param moduleInfos Data about each swerve module
     */
+  @Deprecated
   public SwerveDrive(
       BuildMode mode,
       int pigeon2ID,
@@ -168,7 +169,6 @@ public class SwerveDrive {
       String gyroCanbus,
       CurrentLimitsConfigs currentLimit,
       Subsystem subsystem,
-      boolean useTimestamped,
       BooleanSupplier flipTrajectory,
       Matrix<N3, N1> stdDevs,
       double loopPeriod,
@@ -241,19 +241,11 @@ public class SwerveDrive {
     switch (mode) {
       case REAL:
         gyroIO = new GyroIOReal(pigeon2ID, gyroCanbus);
-        if (!useTimestamped) {
           odometry =
               new SwerveOdometryReal(
                   new SwerveDrivePoseEstimator(
                       kDriveKinematics, getCurrentAngle(), getModulePositions(), new Pose2d()));
-        } else {
-          odometry =
-              new SwerveTimestampedOdometryReal(
-                  new TimestampedPoseEstimator(stdDevs),
-                  kDriveKinematics,
-                  modules,
-                  this::getCurrentAngle);
-        }
+       
         break;
       case REPLAY:
         gyroIO = new GyroIO() {};
@@ -263,13 +255,11 @@ public class SwerveDrive {
                     kDriveKinematics, getCurrentAngle(), getModulePositions(), new Pose2d()));
         break;
       default:
-        if (!useTimestamped) {
-          odometry = new SwerveOdometrySim(kDriveKinematics, modules);
-        } else {
-          odometry =
-              new SwerveTimestampedOdometrySim(
-                  new TimestampedPoseEstimator(stdDevs), kDriveKinematics, modules);
-        }
+        
+        odometry =
+            new SwerveTimestampedOdometrySim(
+                new TimestampedPoseEstimator(stdDevs), kDriveKinematics, modules);
+        
         gyroIO = new GyroIO() {};
         break;
     }
