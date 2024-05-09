@@ -15,6 +15,10 @@ public class PIDSVGains implements Sendable, Cloneable {
     System.arraycopy(values, 0, gains, 0, values.length);
   }
 
+  public PIDSVGains() {
+    this(0, 0, 0, 0, 0);
+  }
+
   public double getP() {
     return gains[0];
   }

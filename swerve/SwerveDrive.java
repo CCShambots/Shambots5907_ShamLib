@@ -277,6 +277,111 @@ public class SwerveDrive {
     this.autoThetaGains = autoThetaGains;
   }
 
+  public SwerveDrive(SwerveDriveConfig config) {
+
+    this.buildMode = config.buildMode;
+
+    this.maxChassisSpeed = config.standardSpeedLimits.getMaxSpeed();
+    this.maxChassisAcceleration = config.standardSpeedLimits.getMaxAcceleration();
+    this.maxChassisRotationVel = config.standardSpeedLimits.getMaxRotationalSpeed();
+    this.maxChassisRotationAccel = config.standardSpeedLimits.getMaxRotationalAcceleration();
+
+    this.translationGains = config.translationGains;
+
+    this.loopPeriod = config.loopPeriod;
+
+    modules = new ArrayList<>();
+    Translation2d[] offsets = new Translation2d[config.moduleInfos.length];
+    for (int i = 0; i < config.moduleInfos.length; i++) {
+      numModules++;
+      ModuleInfo m = config.moduleInfos[i];
+      offsets[i] = m.offset;
+
+      SwerveModuleIO io = new SwerveModuleIO() {};
+
+      switch (config.buildMode) {
+        case REAL:
+          io =
+              new SwerveModuleIOReal(
+                  config.moduleCanbus,
+                  m,
+                  config.moduleDriveGains,
+                  config.moduleTurnGains,
+                  config.maxModuleTurnVelo,
+                  config.maxModuleTurnAccel,
+                  m.enableTurnFOC,
+                  m.enableTurnFOC,
+                  config.currentLimit);
+          break;
+        case SIM:
+          io =
+              new SwerveModuleIOSim(
+                  config.moduleCanbus,
+                  m,
+                  config.moduleDriveGains,
+                  config.moduleTurnGains,
+                  config.maxModuleTurnVelo,
+                  config.maxModuleTurnAccel,
+                  config.currentLimit);
+        default:
+          break;
+      }
+
+      modules.add(
+          new SwerveModule(
+              io,
+              "Module-" + numModules,
+              config.moduleCanbus,
+              m,
+              config.moduleDriveGains,
+              config.moduleTurnGains,
+              config.maxModuleTurnVelo,
+              config.maxModuleTurnAccel));
+
+    }
+
+    kDriveKinematics = new SwerveDriveKinematics(offsets);
+
+    //Logic for changing what IO objects are constructed based on the build mode
+    switch (config.buildMode) {
+      case REAL:
+        gyroIO = new GyroIOReal(config.pigeon2ID, config.gyroCanbus);
+          odometry =
+              new SwerveOdometryReal(
+                  new SwerveDrivePoseEstimator(
+                      kDriveKinematics, getCurrentAngle(), getModulePositions(), new Pose2d()));
+       
+        break;
+      case REPLAY:
+        gyroIO = new GyroIO() {};
+        odometry =
+            new SwerveOdometryReal(
+                new SwerveDrivePoseEstimator(
+                    kDriveKinematics, getCurrentAngle(), getModulePositions(), new Pose2d()));
+        break;
+      default:
+        
+        odometry =
+            new SwerveTimestampedOdometrySim(
+                new TimestampedPoseEstimator(config.standardDeviations), kDriveKinematics, modules);
+        
+        gyroIO = new GyroIO() {};
+        break;
+    }
+
+    rotationOffset = getGyroHeading();
+    holdAngle = new Rotation2d(rotationOffset.getRadians());
+
+    this.driveBaseRadius =
+        Math.hypot(
+            config.moduleInfos[0].offset.getX(),
+            config.moduleInfos[0].offset.getY()); // Radius of the drive base in meters
+
+    this.flipTrajectory = config.flipTrajectory;
+    this.subsystem = config.subsystem;
+    this.autoThetaGains = config.autoThetaGains;
+  }
+
   public void configurePathplanner() {
     // Configure the auto builder stuff
     if (!AutoBuilder.isConfigured()) {
