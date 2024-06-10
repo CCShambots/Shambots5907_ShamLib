@@ -249,12 +249,48 @@ public abstract class StateMachine<E extends Enum<E>> extends SubsystemBase {
    *
    * @param start beginning state
    * @param end ending state
+   * @param run the runnable to run between them
+   */
+  public final void addCommutativeTransition(E start, E end, Runnable toRun) {
+    transitionGraph.addEdge(new CommandTransition<>(start, end, new InstantCommand(toRun)));
+    transitionGraph.addEdge(new CommandTransition<>(end, start, new InstantCommand(toRun)));
+  }
+
+  /**
+   * Add a transition both ways between two states
+   *
+   * @param start beginning state
+   * @param end ending state
+   */
+  public final void addCommutativeTransition(E start, E end) {
+    transitionGraph.addEdge(new CommandTransition<>(start, end, new InstantCommand()));
+    transitionGraph.addEdge(new CommandTransition<>(end, start, new InstantCommand()));
+  }
+
+  /**
+   * Add a transition both ways between two states
+   *
+   * @param start beginning state
+   * @param end ending state
    * @param run1 the command to run between start and end
    * @param run2 the command to run between end and start
    */
   public final void addCommutativeTransition(E start, E end, Command run1, Command run2) {
     transitionGraph.addEdge(new CommandTransition<>(start, end, run1));
     transitionGraph.addEdge(new CommandTransition<>(end, start, run2));
+  }
+
+  /**
+   * Add a transition both ways between two states
+   *
+   * @param start beginning state
+   * @param end ending state
+   * @param run1 the runnable to run between start and end
+   * @param run2 the runnable to run between end and start
+   */
+  public final void addCommutativeTransition(E start, E end, Runnable run1, Runnable run2) {
+    transitionGraph.addEdge(new CommandTransition<>(start, end, new InstantCommand(run1)));
+    transitionGraph.addEdge(new CommandTransition<>(end, start, new InstantCommand(run2)));
   }
 
   /**

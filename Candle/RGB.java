@@ -10,4 +10,8 @@ public class RGB {
     G = g;
     B = b;
   }
+
+  public String toLoggable() {
+    return R + "," + G + "," + B;
+  }
 }
