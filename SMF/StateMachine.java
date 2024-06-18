@@ -226,6 +226,7 @@ public abstract class StateMachine<E extends Enum<E>> extends SubsystemBase {
     addOmniTransition(state, () -> {});
   }
 
+  @SafeVarargs
   public final void addOmniTransitions(E... states) {
     for (E state : states) {
       addOmniTransition(state);
