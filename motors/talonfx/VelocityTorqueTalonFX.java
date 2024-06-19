@@ -18,7 +18,11 @@ public class VelocityTorqueTalonFX extends EnhancedTalonFX {
    *     units
    */
   public VelocityTorqueTalonFX(
-      int deviceNumber, String canbus, PIDSVGains gains, double feedForward, double inputToOutputRatio) {
+      int deviceNumber,
+      String canbus,
+      PIDSVGains gains,
+      double feedForward,
+      double inputToOutputRatio) {
     super(deviceNumber, canbus, inputToOutputRatio);
 
     this.feedForward = feedForward;
@@ -38,7 +42,8 @@ public class VelocityTorqueTalonFX extends EnhancedTalonFX {
    * @param inputToOutputRatio number to multiply TalonFX integrated encoder ticks by to get output
    *     units
    */
-  public VelocityTorqueTalonFX(int deviceNumber, PIDSVGains gains, double feedForward, double inputToOutputRatio) {
+  public VelocityTorqueTalonFX(
+      int deviceNumber, PIDSVGains gains, double feedForward, double inputToOutputRatio) {
     this(deviceNumber, "", gains, feedForward, inputToOutputRatio);
   }
 
@@ -48,7 +53,10 @@ public class VelocityTorqueTalonFX extends EnhancedTalonFX {
    * @param target target position (in output units/sec)
    */
   public void setTarget(double target) {
-    setControl(new VelocityTorqueCurrentFOC(outputToTicks(target)).withFeedForward(feedForward).withSlot(0));
+    setControl(
+        new VelocityTorqueCurrentFOC(outputToTicks(target))
+            .withFeedForward(feedForward)
+            .withSlot(0));
 
     this.target = target;
   }
