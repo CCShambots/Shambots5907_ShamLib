@@ -77,21 +77,21 @@ public class CANdleEX extends CANdle {
 
             if (currentAnimation instanceof LarsonAnimation
                 || currentAnimation instanceof StrobeAnimation) {
-                Animation animation = currentAnimation;
+              Animation animation = currentAnimation;
 
-                Class<?> superClass = animation.getClass().getSuperclass();
+              Class<?> superClass = animation.getClass().getSuperclass();
 
-                Field speedField = superClass.getSuperclass().getDeclaredField("speed");
-                Field ledOffsetField = superClass.getSuperclass().getDeclaredField("ledOffset");
-                Field directionField = superClass.getDeclaredField("direction");
-                Field sizeField = superClass.getDeclaredField("size");
-                Field rField = superClass.getDeclaredField("r");
-                Field gField = superClass.getDeclaredField("g");
-                Field bField = superClass.getDeclaredField("b");
+              Field speedField = superClass.getSuperclass().getDeclaredField("speed");
+              Field ledOffsetField = superClass.getSuperclass().getDeclaredField("ledOffset");
+              Field directionField = superClass.getDeclaredField("direction");
+              Field sizeField = superClass.getDeclaredField("size");
+              Field rField = superClass.getDeclaredField("r");
+              Field gField = superClass.getDeclaredField("g");
+              Field bField = superClass.getDeclaredField("b");
 
-                speedField.setAccessible(true);
-                ledOffsetField.setAccessible(true);
-                directionField.setAccessible(true);
+              speedField.setAccessible(true);
+              ledOffsetField.setAccessible(true);
+              directionField.setAccessible(true);
               sizeField.setAccessible(true);
               rField.setAccessible(true);
               gField.setAccessible(true);
