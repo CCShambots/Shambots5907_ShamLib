@@ -86,7 +86,7 @@ public class StateMachineTesting {
     assert stateMachine.getCurrentTransition().getEndState() != ExampleState.D;
 
     t.start();
-    while (!t.hasElapsed(ShamLibConstants.SMF.transitionTimeout + 0.1)) stepCommandScheduler(1);
+    while (!t.hasElapsed(ShamLibConstants.SMF.TRANSITIONTIMEOUT + 0.1)) stepCommandScheduler(1);
     t.stop();
 
     assert !stateMachine.isTransitioning();

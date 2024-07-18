@@ -10,10 +10,10 @@ public class LoggedTunablePIDSV {
   private final BooleanSupplier allowTuningSupplier;
 
   public LoggedTunablePIDSV(
-      String name, PIDSVGains defaultValue, BooleanSupplier allowTuningSupplier) {
+      String name, PIDSVGains defaultValue, BooleanSupplier allowTuningSupplier, boolean sendToNT) {
     this.allowTuningSupplier = allowTuningSupplier;
 
-    dashboardPIDSV = new LoggedDashboardPIDSV(name, defaultValue);
+    dashboardPIDSV = new LoggedDashboardPIDSV(name, defaultValue, sendToNT);
   }
 
   public PIDSVGains get() {

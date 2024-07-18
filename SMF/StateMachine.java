@@ -1,6 +1,6 @@
 package frc.robot.ShamLib.SMF;
 
-import static frc.robot.ShamLib.ShamLibConstants.SMF.transitionTimeout;
+import static frc.robot.ShamLib.ShamLibConstants.SMF.TRANSITIONTIMEOUT;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Timer;
@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.ShamLib.SMF.graph.DirectionalEnumGraph;
 import frc.robot.ShamLib.SMF.transitions.CommandTransition;
 import frc.robot.ShamLib.SMF.transitions.TransitionBase;
+import frc.robot.ShamLib.ShamLibConstants;
 import java.util.*;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -19,7 +20,7 @@ public abstract class StateMachine<E extends Enum<E>> extends SubsystemBase {
   private final HashMap<E, Command> stateCommands;
   private final Timer transitionTimer;
   private final Set<E> currentFlags;
-  private final double transitionTimeOut = transitionTimeout;
+  private final double transitionTimeOut = TRANSITIONTIMEOUT;
   private final E undeterminedState;
   private E currentState;
 
@@ -28,7 +29,7 @@ public abstract class StateMachine<E extends Enum<E>> extends SubsystemBase {
   private final Class<E> enumType;
   private final List<StateMachine<?>> subsystems;
 
-  private final LoggedDashboardChooser<E> stateChooser;
+  private LoggedDashboardChooser<E> stateChooser;
   private E lastChooserRequest;
 
   /**
@@ -48,11 +49,12 @@ public abstract class StateMachine<E extends Enum<E>> extends SubsystemBase {
     currentFlags = new HashSet<>();
     stateCommands = new HashMap<>();
     subsystems = new ArrayList<>();
-    stateChooser = new LoggedDashboardChooser<>(name + "State Chooser");
     lastChooserRequest = undeterminedState;
 
-    initStateChooser();
-
+    if (ShamLibConstants.SMF.SEND_STATE_CHOOSERS) {
+      stateChooser = new LoggedDashboardChooser<>(name + " State Chooser");
+      initStateChooser();
+    }
     setName(name);
 
     transitionGraph = new DirectionalEnumGraph<>(enumType);
@@ -492,7 +494,8 @@ public abstract class StateMachine<E extends Enum<E>> extends SubsystemBase {
 
   @Override
   public final void periodic() {
-    E chooserRequest = stateChooser.get();
+    E chooserRequest =
+        ShamLibConstants.SMF.SEND_STATE_CHOOSERS ? stateChooser.get() : lastChooserRequest;
 
     if (enabled) {
       updateTransitioning();

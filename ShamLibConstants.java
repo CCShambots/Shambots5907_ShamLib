@@ -3,7 +3,10 @@ package frc.robot.ShamLib;
 public class ShamLibConstants {
 
   public static class SMF {
-    public static final double transitionTimeout = 2; // seconds
+    public static final double TRANSITIONTIMEOUT = 2; // seconds
+
+    // Change this value to change whether the state choosers will get sent
+    public static boolean SEND_STATE_CHOOSERS = true;
   }
 
   public static class Swerve {

@@ -20,14 +20,18 @@ public class LoggedDashboardPIDSV implements LoggedDashboardInput {
 
   private Consumer<PIDSVGains> onChange = null;
 
+  private boolean sendToNT;
+
   private final LoggableInputs inputs =
       new LoggableInputs() {
         @Override
         public void toLog(LogTable table) {
           double[] numbers = value.toArray();
 
-          for (int i = 0; i < 5; i++) {
-            SmartDashboard.putNumber(key + "/" + valuesOrder.charAt(i), numbers[i]);
+          if (sendToNT) {
+            for (int i = 0; i < 5; i++) {
+              SmartDashboard.putNumber(key + "/" + valuesOrder.charAt(i), numbers[i]);
+            }
           }
 
           table.put(key + resetPath, reset.get());
@@ -48,13 +52,16 @@ public class LoggedDashboardPIDSV implements LoggedDashboardInput {
         }
       };
 
-  public LoggedDashboardPIDSV(String key, PIDSVGains defaultValue) {
+  public LoggedDashboardPIDSV(String key, PIDSVGains defaultValue, boolean sendToNT) {
     this.key = key;
     this.defaultValue = defaultValue;
     this.value = defaultValue.clone();
+    this.sendToNT = sendToNT;
 
-    putNumbers(getNumbers());
-    SmartDashboard.putBoolean(key + resetPath, reset.get());
+    if (sendToNT) {
+      putNumbers(getNumbers());
+      SmartDashboard.putBoolean(key + resetPath, reset.get());
+    }
 
     periodic();
 
@@ -91,7 +98,9 @@ public class LoggedDashboardPIDSV implements LoggedDashboardInput {
   }
 
   public void set(PIDSVGains value) {
-    putNumbers(value.toArray());
+    if (sendToNT) {
+      putNumbers(value.toArray());
+    }
   }
 
   public PIDSVGains get() {
