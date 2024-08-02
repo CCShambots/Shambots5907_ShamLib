@@ -71,6 +71,8 @@ public class SwerveDrive {
   private final BooleanSupplier flipTrajectory;
   private final Subsystem subsystem;
 
+  private double assumedWheelRadius = 0;
+
   protected OdometryBoundingBox odometryBoundingBox;
 
   /**
@@ -291,6 +293,8 @@ public class SwerveDrive {
 
     this.loopPeriod = config.loopPeriod;
 
+    this.assumedWheelRadius = config.wheelRadius;
+
     modules = new ArrayList<>();
     Translation2d[] offsets = new Translation2d[config.moduleInfos.length];
     for (int i = 0; i < config.moduleInfos.length; i++) {
@@ -466,8 +470,8 @@ public class SwerveDrive {
     this.odometryBoundingBox = odometryBoundingBox;
   }
 
-  public Command getCalculateWheelRadiusCommand(double assumedWheelRadiusMeters) {
-    return new CalculateWheelRadiusCommand(this, assumedWheelRadiusMeters, driveBaseRadius);
+  public Command getCalculateWheelRadiusCommand() {
+    return new CalculateWheelRadiusCommand(this, assumedWheelRadius, driveBaseRadius);
   }
 
   public double[] getModuleAngles() {

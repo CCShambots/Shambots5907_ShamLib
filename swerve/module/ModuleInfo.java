@@ -56,6 +56,7 @@ public class ModuleInfo {
   public static ModuleInfo generateModuleInfo(
       SwerveModuleType type,
       SwerveModuleSpeedLevel speed,
+      double wheelRadius,
       int driveMotorID,
       int turnMotorID,
       int encoderID,
@@ -71,7 +72,7 @@ public class ModuleInfo {
         Rotation2d.fromDegrees(encoderOffset),
         offset,
         type.turnRatio,
-        speed.gearRatio * type.wheelCircumferencne,
+        speed.gearRatio * 2 * Math.PI * wheelRadius,
         driveInverted,
         type.turnInverted,
         enableDriveFOC,
@@ -79,17 +80,15 @@ public class ModuleInfo {
   }
 
   public enum SwerveModuleType {
-    MK4(false, (1.0 / 12.8) * 360, 2 * Math.PI * 0.0508),
-    MK4i(true, (7.0 / 150.0) * 360, 2 * Math.PI * 0.05032236975010011);
+    MK4(false, (1.0 / 12.8) * 360),
+    MK4i(true, (7.0 / 150.0) * 360);
 
     public final boolean turnInverted; // Whether the turn motor should be inverted
     public final double turnRatio; // The gear ratio on the turn motor (deg)
-    public final double wheelCircumferencne; // The circumference of the swerve's wheels(m)
 
-    private SwerveModuleType(boolean turnInverted, double turnRatio, double wheelCircumferencne) {
+    private SwerveModuleType(boolean turnInverted, double turnRatio) {
       this.turnInverted = turnInverted;
       this.turnRatio = turnRatio;
-      this.wheelCircumferencne = wheelCircumferencne;
     }
   }
 

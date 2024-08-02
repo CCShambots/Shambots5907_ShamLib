@@ -25,6 +25,7 @@ public class SwerveDriveConfig {
   public double maxModuleTurnAccel = 0;
   public String moduleCanbus = "";
   public ModuleInfo[] moduleInfos = new ModuleInfo[] {};
+  public double wheelRadius = 0;
 
   public SwerveSpeedLimits standardSpeedLimits = new SwerveSpeedLimits(0, 0, 0, 0);
   public PIDGains autoThetaGains = new PIDGains();
