@@ -1,5 +1,8 @@
 package frc.robot.ShamLib.swerve.module;
 
+import static frc.robot.ShamLib.ShamLibConstants.Swerve.MINIMUM_STALL_DELTA_VELOCITY;
+import static frc.robot.ShamLib.ShamLibConstants.Swerve.MINIMUM_STALL_TARGET_VELOCITY;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -11,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.ShamLib.ShamLibConstants;
 import frc.robot.ShamLib.motors.talonfx.PIDSVGains;
 import frc.robot.ShamLib.motors.tuning.LinearTuningCommand;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule implements Sendable {
@@ -125,6 +129,12 @@ public class SwerveModule implements Sendable {
 
   public String getModuleName() {
     return moduleName;
+  }
+
+  @AutoLogOutput
+  public boolean isStalling() {
+    return targetState.speedMetersPerSecond > MINIMUM_STALL_TARGET_VELOCITY
+        && Math.abs(inputs.driveMotorTarget - getDriveMotorRate()) > MINIMUM_STALL_DELTA_VELOCITY;
   }
 
   public Command getTurnVoltageCalcCommand(

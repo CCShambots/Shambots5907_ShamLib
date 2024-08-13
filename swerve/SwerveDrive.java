@@ -674,6 +674,11 @@ public class SwerveDrive {
     return modules;
   }
 
+  @AutoLogOutput
+  public boolean isStalling() {
+    return modules.stream().anyMatch(SwerveModule::isStalling);
+  }
+
   public Command createPathFindingCommand(Pose2d target) {
     PathConstraints constraints =
         new PathConstraints(
